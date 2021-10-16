@@ -1,12 +1,6 @@
 const { VueLoaderPlugin } = require('vue-loader');
 const path = require('path');
-// const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const COMMIT_HASH = require('child_process')
-  .execSync('git rev-parse --short HEAD')
-  .toString()
-  .trim();
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const PACKAGE = require('./package.json');
 
 module.exports = {
   entry: {
@@ -40,7 +34,6 @@ module.exports = {
   },
   plugins: [
     new VueLoaderPlugin(),
-    // new MiniCssExtractPlugin(),
     new HtmlWebpackPlugin({
       inject: 'head',
       template: path.resolve(__dirname, 'public/index.html'),
@@ -55,11 +48,11 @@ module.exports = {
     alias: {
       '@modules': path.resolve(__dirname, 'src/js/modules'),
       '@components': path.resolve(__dirname, 'src/js/components'),
-      '@node_modules': path.resolve(__dirname, 'node_modules')
+      '@node_modules': path.resolve(__dirname, 'node_modules'),
+      vue: 'vue/dist/vue.js',
     },
   },
   devServer: {
-    // contentBase: ['dist', '.'],
     compress: true,
     headers: {
       'Cross-Origin-Embedder-Policy': 'require-corp',
