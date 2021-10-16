@@ -4,8 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "npm run test",
-    "build": "webpack-dev-server --config ./config/webpack.config.dev.js"
+    "test": "jest",
+    "dev": "webpack serve --config ./webpack.config.js --mode=development",
+    "build": "webpack --config ./webpack.config.js --mode=production",
+    "prod": "webpack serve --config ./webpack.config.js --mode=production"
   },
   "repository": {
     "type": "git",
@@ -18,19 +20,35 @@
   },
   "homepage": "https://github.com/leokolezhuk/fr-demo/README.md",
   "dependencies": {
-    "vue": "^2.6.11"
+    "@babel/plugin-transform-modules-commonjs": "^7.15.4",
+    "@shaggytools/nhtsa-api-wrapper": "^2.0.2",
+    "core-js": "^2.6.12",
+    "vue": "^2.6.11",
+    "vue-loader": "^15.9.8"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0",
     "@babel/plugin-syntax-dynamic-import": "^7.8.3",
+    "@babel/plugin-syntax-import-meta": "7.10.x",
     "@babel/preset-env": "^7.9.5",
+    "@jest-runner/electron": "3.0.x",
+    "@jest/globals": "26.6.x",
+    "@types/jest": "26.0.x",
+    "@vue/test-utils": "1.2.x",
+    "babel-core": "~7.0.0-bridge",
+    "babel-jest": "^27.0.6",
     "babel-loader": "^8.1.0",
+    "babel-preset-airbnb": "5.0.x",
+    "core-js": "^2.6.12",
     "css-loader": "^3.5.2",
-    "vue-loader": "^15.9.1",
+    "electron": "^15.2.0",
+    "html-webpack-plugin": "5.3.x",
+    "jest": "26.6.x",
+    "vue-jest": "^3.0.7",
     "vue-style-loader": "^4.1.2",
     "vue-template-compiler": "^2.6.11",
-    "webpack": "^4.42.1",
-    "webpack-cli": "^3.3.11",
-    "webpack-dev-server": "^3.10.3"
+    "webpack": "5.58.x",
+    "webpack-cli": "4.9.x",
+    "webpack-dev-server": "^4.3.1"
   }
 }
