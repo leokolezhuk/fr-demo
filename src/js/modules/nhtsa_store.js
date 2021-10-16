@@ -1,3 +1,5 @@
+import '@node_modules/regenerator-runtime/runtime';
+
 export default class NHTSAStore {
   constructor() {
     this.SERVER_URL = 'https://vpic.nhtsa.dot.gov';
