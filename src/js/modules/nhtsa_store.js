@@ -1,9 +1,26 @@
 export default class NHTSAStore {
-  SERVER_URL = 'https://vpic.nhtsa.dot.gov';
-
   constructor() {
+    this.SERVER_URL = 'https://vpic.nhtsa.dot.gov';
+  }
 
-
+  async get(url) {
+    return await fetch(url)
+      .then(response => {
+          if (!response.ok) {
+            throw new Error(response.statusText);
+          }
+          return response.json();
+        }
+      )
+      .then(response => {
+        if (!response.Results) {
+          throw new Error('Response had an unexcepted format.');
+        }
+        return response.Results;
+      })
+      .catch((error) => {
+        console.error(`Could not fetch NHTSA data from ${url}. ${error}`);
+      });
   }
 
   /**
@@ -11,24 +28,16 @@ export default class NHTSAStore {
    * @returns {Array} List of makes.
    */
   async getAllMakes() {
-    const endPointURL = `${this.SERVER_URL}/vehicles/GetAllMakes?format=json`;
-    return await fetch(endPointURL).then(
-      response => {
-        if (!response.ok) {
-          throw new Error(response.statusText);
-        }
-        return response.json();
-      }
-    ).catch((error) => {
-      console.warn(`Could not fetch vehicle makes. ${error}`);
-    });
+    const endPointURL = `${this.SERVER_URL}/api/vehicles/GetAllMakes?format=json`;
+    return await this.get(endPointURL);
   }
 
   /** Return the list of models for a given make.
    * @param {string} makeId Id of the make for which the models are returned.
    * @returns {Array} List of models for a given make.
    */
-  getModelsForMakeId(makeId) {
-    return [];
+  async getModelsForMakeId(makeId) {
+    const endPointURL = `${this.SERVER_URL}/api/vehicles/GetModelsForMakeId/${makeId}?format=json`;
+    return await this.get(endPointURL);
   }
 }
