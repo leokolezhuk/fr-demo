@@ -4,7 +4,7 @@
       <input type="radio" class="btn-check"
              name="fuelTypeSelection"
              :id="getOptionId(option)"
-             :value="getOptionId(option)"
+             :value="option.id"
              v-model="selectedOptionId"
              autocomplete="off">
       <label class="btn btn-outline-primary"

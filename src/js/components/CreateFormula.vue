@@ -36,12 +36,10 @@
     </div>
     <div class="mb-3 row">
       <div class="form-check">
-        <!--        <label for="yearSelector" class="form-label">-->
-        <!--          Year-->
-        <!--        </label>-->
-        <input type="email"
+        <input type="text"
                class="form-control"
                id="yearSelector"
+               v-model="selectedYear"
                placeholder="Model year">
       </div>
     </div>
