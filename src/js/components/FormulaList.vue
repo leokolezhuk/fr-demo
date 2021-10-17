@@ -3,7 +3,6 @@
     <table class="formula-list-table table table-striped table-hover">
       <thead>
       <tr>
-        <th scope="col">#</th>
         <th scope="col">Make</th>
         <th scope="col">Model</th>
         <th scope="col">Year</th>
@@ -14,7 +13,6 @@
       </thead>
       <tbody>
       <tr v-for="formula in formulas" :key="`formula${formula.id}`">
-        <th scope="row">{{ formula.id }}</th>
         <td :title="formula.makeName"> {{ formula.makeName }}</td>
         <td :title="formula.modelName"> {{ formula.modelName }}</td>
         <td> {{ formula.yearComparisonType }} {{ formula.year }}</td>
@@ -57,18 +55,24 @@
 </script>
 
 <style scoped>
-  .formula-list-table-wrapper{
+  .formula-list-table-wrapper {
     max-height: 60em;
     overflow: auto;
     display: inline-block;
     width: 100%;
   }
-  .formula-list-table > th, td{
+
+  .formula-list-table {
+    margin-bottom: 0;
+  }
+
+  .formula-list-table > th, td {
     max-width: 9em;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+
   .formula-list-table > tbody > tr:nth-child(2n+1) > td, .table-striped > tbody > tr:nth-child(2n+1) > th {
     background-color: #e8f1ff;
   }

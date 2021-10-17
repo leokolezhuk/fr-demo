@@ -175,15 +175,6 @@
       }
     },
     methods: {
-      /**Saves datalist selection in a given vue data property.
-       * @param e {Event} Input change event.
-       * @param targetProperty {String} Name of the vue data property that will store the new
-       * selected value.
-       */
-      saveDatalistSelection(e, targetProperty) {
-        let val = e.target.value;
-        this[targetProperty] = val;
-      },
       validate() {
         this.errors = [];
         if (!(this.selectedMake ||
@@ -212,7 +203,7 @@
           }
           const firstAutomobileYear = 1769;
           const currentYear = new Date().getFullYear();
-          if (yearInt < firstAutomobileYear || yearInt >= currentYear) {
+          if (yearInt < firstAutomobileYear || yearInt > currentYear) {
             this.errors.push(
               `The model year should be between ${firstAutomobileYear} and ${currentYear}.`
             );
