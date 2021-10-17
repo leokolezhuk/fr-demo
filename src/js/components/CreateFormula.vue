@@ -1,13 +1,21 @@
 <template>
   <form class="container create-formula-form">
     <h3>Create Formula</h3>
+    <div v-show="errors">
+      <ul class="form-errors">
+        <li  v-for="error in errors">
+          {{ error }}
+        </li>
+      </ul>
+
+    </div>
     <div class="mb-3 row">
       <div class="form-group">
         <input class="form-control"
                type="text"
                placeholder="Makes"
                list="vehicleMakes"
-               @input="saveDatalistSelection($event, 'selectedMake')">
+               v-model="selectedMake">
         <datalist id="vehicleMakes">
         </datalist>
       </div>
@@ -19,7 +27,7 @@
                  type="text"
                  placeholder="Models"
                  list="vehicleModels"
-                 @input="saveDatalistSelection($event, 'selectedModel')">
+                 v-model="selectedModel">
           <datalist id="vehicleModels">
           </datalist>
         </div>
@@ -31,6 +39,7 @@
         <RadioButtonSelector
           id="yearComparisonTypeSelector"
           :options="yearComparisonTypeOptions"
+          :initial-selected-option-id="selectedYearComparisonType"
           @change="selectedYearComparisonType = $event.newValue"
         ></RadioButtonSelector>
       </div>
@@ -46,6 +55,7 @@
       <RadioButtonSelector
         id="fuelTypeSelector"
         :options="fuelTypeOptions"
+        :initial-selected-option-id="selectedFuelType"
         @change="selectedFuelType = $event.newValue"
       ></RadioButtonSelector>
     </div>
@@ -53,11 +63,13 @@
       <RadioButtonSelector
         id="riskTypeSelector"
         :options="riskTypeOptions"
+        :initial-selected-option-id="selectedRisk"
         @change="selectedRisk = $event.newValue"
       ></RadioButtonSelector>
     </div>
     <div class="d-grid gap-2">
-      <button type="submit" class="btn btn-primary"
+      <button type="submit"
+              class="btn btn-primary"
               @click="create">Submit
       </button>
     </div>
@@ -87,7 +99,7 @@
     data() {
       return {
         isModelsLoading: false,
-        selectedMake: '',
+        selectedMake: null,
         selectedModel: null,
         selectedYear: null,
         selectedYearComparisonType: null,
@@ -132,6 +144,7 @@
             title: 'High risk'
           },
         ],
+        errors: [],
       }
     },
     watch: {
@@ -146,8 +159,9 @@
           nhtsaStore.getModelsForMakeId(selectedMake.Make_ID).then((models) => {
             const availableModels = {};
             models?.forEach((model) => {
-              availableModels[model.Model_ID] = model;
+              availableModels[model.Model_Name] = model;
             });
+            this.availableModels = availableModels;
             this.updateDataList('vehicleModels',
               Object.values(availableModels),
               (item) => item.Model_Name
@@ -159,19 +173,49 @@
       }
     },
     methods: {
+      /**Saves datalist selection in a given vue data property.
+       * @param e {Event} Input change event.
+       * @param targetProperty {String} Name of the vue data property that will store the new
+       * selected value.
+       */
       saveDatalistSelection(e, targetProperty) {
         let val = e.target.value;
         this[targetProperty] = val;
       },
-      create() {
-        const createdFormula = formulaStore.post(this.selectedMake,
-          this.selectedModel,
-          this.selectedYearComparisonType,
-          this.selectedYear,
-          this.selectedFuelType,
-          this.selectedRisk
-        );
-        this.notifyFormulaCreated(createdFormula);
+      validate() {
+        this.errors = [];
+        if (!(this.selectedMake ||
+          this.selectedModel ||
+          (this.selectedYear && this.selectedYearComparisonType)
+          || this.selectedFuelType)
+        ) {
+          this.errors.push(`At least one of the following must be specified:
+          make, model, year, fuel`);
+        }
+        if (this.selectedMake && this.availableMakes[this.selectedMake] === undefined) {
+          this.errors.push('Vehicle make should be one of the available options.');
+        }
+        if (this.selectedModel && this.availableModels[this.selectedModel] === undefined) {
+          this.errors.push('Vehicle model should be one of the available options.')
+        }
+        if (!this.selectedRisk){
+          this.errors.push('The risk has to be specified.')
+        }
+        return (this.errors.length === 0);
+      },
+      create(e) {
+        if (this.validate()) {
+          const createdFormula = formulaStore.post(this.selectedMake,
+            this.selectedModel,
+            this.selectedYearComparisonType,
+            this.selectedYear,
+            this.selectedFuelType,
+            this.selectedRisk
+          );
+          this.resetForm();
+          this.notifyFormulaCreated(createdFormula);
+        }
+        e.preventDefault();
       },
       notifyFormulaCreated(createdFormula) {
         /**
@@ -179,7 +223,7 @@
          * @event change
          * @property {Object[]} new set option.
          */
-        this.$emit('formula-created', { formula: createdFormula });
+        this.$emit('formulaCreated', { formula: createdFormula });
       },
       resetForm() {
         this.selectedMake = null;
@@ -198,7 +242,7 @@
        * @param valueExtractor{CallableFunction} Function that defines how to extract the value
        * of each element in the provided list. This value is used as the option value.
        * */
-      updateDataList(datalistId, list, valueExtractor){
+      updateDataList(datalistId, list, valueExtractor) {
         var datalistElement = document.getElementById(datalistId);
         var datalistString = '';
         for (let i = 0; i < list.length; i++) {
@@ -215,7 +259,6 @@
           availableMakes[make.Make_Name] = make;
         });
         this.availableMakes = availableMakes;
-
         const availableMakeValues = Object.values(availableMakes);
         this.updateDataList('vehicleMakes',
           availableMakeValues,
@@ -227,5 +270,7 @@
 </script>
 
 <style>
-
+  .form-errors{
+    color: red;
+  }
 </style>
