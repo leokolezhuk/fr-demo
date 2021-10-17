@@ -3,10 +3,10 @@
     <h1>Friss demo</h1>
     <div class="row">
       <div class="col-6">
-        <FormulaList :formulas="formulas"></FormulaList>
+        <FormulaList ref="formulaList"></FormulaList>
       </div>
       <div class="col-6">
-        <CreateFormula @formula-created="updateFormulaList"></CreateFormula>
+        <CreateFormula @formulaCreated="updateFormulaList"></CreateFormula>
       </div>
     </div>
   </div>
@@ -14,21 +14,20 @@
 <script>
   import CreateFormula from '@components/CreateFormula.vue';
   import FormulaList from '@components/FormulaList.vue';
-  import { FormulaStore } from '@modules/formula_store';
 
-  const formulaStore = new FormulaStore();
   export default {
     name: "MainApp",
     components: { FormulaList, CreateFormula },
     data() {
       return {
-        formulas: [],
+
       }
     },
     methods: {
       updateFormulaList() {
         console.log('Updating list');
-        this.formulas = formulaStore.getAll();
+        this.$refs.formulaList.pull();
+        // this.formulas = formulaStore.getAll();
         console.log(`Found ${this.formulas.length} formulas.`);
       }
     },

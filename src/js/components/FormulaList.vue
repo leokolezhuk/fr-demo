@@ -12,7 +12,7 @@
       </tr>
       </thead>
       <tbody>
-      <tr v-for="formula in formulas">
+      <tr v-for="formula in formulas" :key="`formula${formula.id}`">
         <th scope="row">{{ formula.id }}</th>
         <td> {{ formula.makeName }}</td>
         <td> {{ formula.modelName }}</td>
@@ -26,14 +26,24 @@
 </template>
 
 <script>
+  import { FormulaStore } from '@modules/formula_store';
+
   export default {
     name: "FormulaList",
-    props: {
-      formulas: {
-        type: Array,
-        required: true,
-      },
+    data() {
+      return {
+        formulas: [],
+      }
     },
+    methods: {
+      pull() {
+        const formulaStore = new FormulaStore();
+        this.formulas = formulaStore.getAll();
+      }
+    },
+    created() {
+      this.pull();
+    }
   }
 </script>
 
