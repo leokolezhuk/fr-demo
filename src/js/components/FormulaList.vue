@@ -9,6 +9,7 @@
         <th scope="col">Year</th>
         <th scope="col">Fuel</th>
         <th scope="col">Risk</th>
+        <th scope="col"></th>
       </tr>
       </thead>
       <tbody>
@@ -19,6 +20,11 @@
         <td> {{ formula.yearComparisonType }} {{ formula.year }}</td>
         <td> {{ formula.fuelType }}</td>
         <td> {{ formula.risk }}</td>
+        <td>
+          <button class="btn btn-sm btn-default" @click="remove(formula)">
+            <i class="fa fa-fw fa-trash"></i>
+          </button>
+        </td>
       </tr>
       </tbody>
     </table>
@@ -26,7 +32,7 @@
 </template>
 
 <script>
-  import { FormulaStore } from '@modules/formula_store';
+  import { formulaStore } from '@modules/formula_store';
 
   export default {
     name: "FormulaList",
@@ -37,9 +43,12 @@
     },
     methods: {
       pull() {
-        const formulaStore = new FormulaStore();
         this.formulas = formulaStore.getAll();
-      }
+      },
+      remove(formula) {
+        formulaStore.delete(formula.id);
+        this.pull();
+      },
     },
     created() {
       this.pull();

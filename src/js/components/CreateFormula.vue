@@ -86,12 +86,11 @@
 </template>
 
 <script>
-  import { FormulaStore } from '@modules/formula_store';
+  import { formulaStore } from '@modules/formula_store';
   import NHTSAStore from '@modules/nhtsa_store';
   import Loader from '@components/Loader.vue';
   import RadioButtonSelector from '@components/RadioButtonSelector.vue';
 
-  const formulaStore = new FormulaStore();
   const nhtsaStore = new NHTSAStore();
   export default {
     name: 'CreateFormula',

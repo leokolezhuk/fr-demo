@@ -1,19 +1,5 @@
 const LS_FORMULAS_KEY = 'formulaList';
 
-function updateStore(storeKey, newValue) {
-  localStorage.setItem(storeKey, JSON.stringify(newValue));
-}
-
-// function getMaxObjectId(objects) {
-//   let maxId = -1;
-//   objects?.forEach((object) => {
-//     if (object.id > maxId) {
-//       maxId = object.id;
-//     }
-//   });
-//   return maxId;
-// }
-
 class FormulaStore {
   constructor() {
     this.formulas = [];
@@ -26,15 +12,13 @@ class FormulaStore {
       formulas: this.formulas,
       lastObjectId: this.lastObjectId,
     };
-    updateStore(LS_FORMULAS_KEY, dataToStore);
+    localStorage.setItem(storeKey, JSON.stringify(newValue));
   }
 
   fetchStore() {
     const storedData = JSON.parse(localStorage.getItem(LS_FORMULAS_KEY));
-    if (storedData?.formulas !== undefined && storedData?.lastObjectId !== undefined) {
-      this.formulas = storedData.formulas;
-      this.lastObjectId = storedData.lastObjectId;
-    }
+    this.formulas = storedData?.formulas ?? [];
+    this.lastObjectId = storedData?.lastObjectId ?? -1;
   }
 
   getAll() {
@@ -63,4 +47,7 @@ class FormulaStore {
   }
 }
 
-export { FormulaStore, LS_FORMULAS_KEY };
+// Export only a single instance effectively making this a singleton.
+const formulaStore = new FormulaStore();
+
+export { formulaStore, LS_FORMULAS_KEY };

@@ -1,7 +1,6 @@
-import { FormulaStore, LS_FORMULAS_KEY } from '@modules/formula_store';
+import { formulaStore, LS_FORMULAS_KEY } from '@modules/formula_store';
 
 describe('Formula Store', () => {
-  let formulaStore;
 
   function postFormula(formulaDefinition) {
     formulaStore.post(
@@ -16,7 +15,11 @@ describe('Formula Store', () => {
 
   beforeEach(() => {
     localStorage.removeItem(LS_FORMULAS_KEY);
-    formulaStore = new FormulaStore();
+    formulaStore.fetchStore();
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
   });
 
   describe('creating a new instance', () => {
