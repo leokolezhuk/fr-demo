@@ -27,14 +27,22 @@
       options: {
         type: Array,
         required: true,
+      },
+      initialSelectedOptionId: {
+        type: String,
+        required: false,
+        default: null,
       }
     },
     data() {
       return {
-        selectedOptionId: null,
+        selectedOptionId: this.initialSelectedOptionId,
       }
     },
     watch: {
+      initialSelectedOptionId() {
+        this.selectedOptionId = this.initialSelectedOptionId;
+      },
       selectedOptionId() {
         this.notifyOptionChanged();
       }
@@ -56,7 +64,7 @@
 </script>
 
 <style scoped>
-  .radio-button-selector-group{
+  .radio-button-selector-group {
     width: 100%;
   }
 </style>
