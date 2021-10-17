@@ -31,7 +31,7 @@ class FormulaStore {
 
   fetchStore() {
     const storedData = JSON.parse(localStorage.getItem(LS_FORMULAS_KEY));
-    if (storedData?.formulas && storedData?.lastObjectId) {
+    if (storedData?.formulas !== undefined && storedData?.lastObjectId !== undefined) {
       this.formulas = storedData.formulas;
       this.lastObjectId = storedData.lastObjectId;
     }
@@ -59,6 +59,7 @@ class FormulaStore {
     };
     this.formulas.push(newFormula);
     this.updateStore();
+    return newFormula;
   }
 }
 

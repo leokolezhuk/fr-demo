@@ -19,7 +19,7 @@ describe('Formula Store', () => {
     formulaStore = new FormulaStore();
   });
 
-  describe(' creating a new instance', () => {
+  describe('creating a new instance', () => {
     describe('with no previously stored data available', () => {
       it('should initialize the formula store correctly', () => {
         expect(formulaStore.formulas).toHaveLength(0);
