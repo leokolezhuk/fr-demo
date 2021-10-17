@@ -20,14 +20,24 @@
   export default {
     name: "RadioButtonSelector",
     props: {
+      /**
+       * ID of the selector. Must be globally unique.
+       */
       id: {
         type: String,
         required: true,
       },
+      /**
+       * List of available options.
+       */
       options: {
         type: Array,
         required: true,
       },
+      /**
+       * Id of the option that should be selected initially.
+       * Accepts external updates.
+       */
       initialSelectedOptionId: {
         type: String,
         required: false,
@@ -55,7 +65,7 @@
         /**
          * Change event that is emitted whenever the selection is changed.
          * @event change
-         * @property {Object[]} new set option.
+         * @property {Object} new set option.
          */
         this.$emit('change', { newValue: this.selectedOptionId });
       },

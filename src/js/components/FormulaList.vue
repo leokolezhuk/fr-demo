@@ -31,7 +31,9 @@
 
 <script>
   import { formulaStore } from '@modules/formula_store';
-
+  /**
+   * Table of formulas.
+   */
   export default {
     name: "FormulaList",
     data() {
@@ -40,9 +42,16 @@
       }
     },
     methods: {
+      /**
+       * Pull the formulas data from storage.
+       */
       pull() {
         this.formulas = formulaStore.getAll();
       },
+      /**
+       * Remove a formula with a given id.
+       * @param {Object} formula Formula to be removed.
+       */
       remove(formula) {
         formulaStore.delete(formula.id);
         this.pull();

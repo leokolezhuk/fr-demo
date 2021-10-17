@@ -85,6 +85,9 @@
   import Loader from '@components/Loader.vue';
   import RadioButtonSelector from '@components/RadioButtonSelector.vue';
 
+  /** Converts the year comparison type from an internal id to the required representation,
+   * @param {String} id Internal Id of the year comparison type to be converted.
+   */
   function getYearComparisonTypeString(id) {
     const mapping = {
       'earlier': '<',
@@ -95,6 +98,9 @@
   }
 
   const nhtsaStore = new NHTSAStore();
+  /**
+   * Interface for creating new formulas.
+   */
   export default {
     name: 'CreateFormula',
     components: { Loader, RadioButtonSelector },
@@ -151,6 +157,7 @@
     },
     watch: {
       selectedMake() {
+        // When selectedMake is updated, fetch models for this make.
         if (this.selectedMake) {
           this.isModelsLoading = true;
           const selectedMake = this.availableMakes[this.selectedMake];
@@ -175,6 +182,9 @@
       }
     },
     methods: {
+      /**
+       * Validate the form data.
+       */
       validate() {
         this.errors = [];
         if (!(this.selectedMake ||
@@ -228,26 +238,31 @@
         }
         e.preventDefault();
       },
+      /**
+       * Abort the creation of a new formula.
+       */
       cancel() {
         this.resetForm();
         this.notifyFormulaCanceled();
       },
       notifyFormulaCreated(createdFormula) {
         /**
-         * Change event that is emitted whenever the selection is changed.
-         * @event change
-         * @property {Object[]} new set option.
+         * Create event that is emitted when the formula has been created.
+         * @event create
+         * @property {Object} Created formula.
          */
         this.$emit('create', { formula: createdFormula });
       },
       notifyFormulaCanceled() {
         /**
-         * Change event that is emitted whenever the selection is changed.
-         * @event change
-         * @property {Object[]} new set option.
+         * Cancel event
+         * @event cancel
          */
         this.$emit('cancel', {});
       },
+      /**
+       * Reset the current form to its initial state.
+       */
       resetForm() {
         this.selectedMake = null;
         this.selectedModel = null;

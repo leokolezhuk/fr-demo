@@ -6,6 +6,9 @@
 </template>
 
 <script>
+  /**
+   * Implements a loader spinner.
+   */
   export default {
     name: "Loader",
   }
