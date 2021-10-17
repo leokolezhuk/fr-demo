@@ -1,16 +1,34 @@
 <template>
   <div id="app">
     <h1>Friss demo</h1>
-    <CreateFormula></CreateFormula>
+    <CreateFormula @formula-created="updateFormulaList"></CreateFormula>
+    <FormulaList :formulas="formulas"></FormulaList>
   </div>
 </template>
 <script>
+  import CreateFormula from '@components/CreateFormula.vue';
+  import FormulaList from '@components/FormulaList.vue';
+  import { FormulaStore } from '@modules/formula_store';
 
-  import CreateFormula from './js/components/CreateFormula.vue';
+  const formulaStore = new FormulaStore();
   export default {
     name: "MainApp",
-    components: { CreateFormula },
-
+    components: { FormulaList, CreateFormula },
+    data() {
+      return {
+        formulas: [],
+      }
+    },
+    methods: {
+      updateFormulaList() {
+        console.log('Updating list');
+        this.formulas = formulaStore.getAll();
+        console.log(`Found ${this.formulas.length} formulas.`);
+      }
+    },
+    created() {
+      this.updateFormulaList();
+    }
   }
 </script>
 <style>
