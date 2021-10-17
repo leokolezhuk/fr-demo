@@ -17,7 +17,7 @@
                 v-if="!isModelsLoading"
                 v-model="selectedModel">
           <option v-for="model in availableModels"
-                  :key="`modelOption_${model.Model_ID}`"
+                  :key="`modelOption_${model.Model_Name}`"
                   v-bind:value="model.Model_ID">
             {{ model.Model_Name }}
           </option>
@@ -55,7 +55,9 @@
         @change="selectedRisk = $event.newValue"
       ></RadioButtonSelector>
     </div>
-    <button type="submit" class="btn btn-primary">Submit</button>
+    <button type="submit" class="btn btn-primary"
+            @click="create">Submit
+    </button>
     <div>
       {{ selectedMake }}<br>
       {{ selectedModel }} <br>
@@ -68,18 +70,20 @@
 </template>
 
 <script>
+  import { FormulaStore } from '@modules/formula_store';
   import NHTSAStore from '@modules/nhtsa_store';
   import Loader from '@components/Loader.vue';
   import RadioButtonSelector from '@components/RadioButtonSelector.vue';
 
+  const formulaStore = new FormulaStore();
   const nhtsaStore = new NHTSAStore();
   export default {
     name: 'CreateFormula',
     components: { Loader, RadioButtonSelector },
     data() {
       return {
-        availableMakes: [],
-        availableModels: [],
+        availableMakes: {},
+        availableModels: {},
         isModelsLoading: false,
         selectedMake: null,
         selectedModel: null,
@@ -133,17 +137,52 @@
         if (this.selectedMake) {
           this.isModelsLoading = true;
           nhtsaStore.getModelsForMakeId(this.selectedMake).then((models) => {
-            this.availableModels = models;
+            const availableModels = {};
+            models.forEach((model) => {
+              availableModels[model.Model_ID] = model;
+            });
+            this.availableModels = availableModels;
             this.isModelsLoading = false;
           });
         }
         return [];
       }
     },
-    methods: {},
+    methods: {
+      create() {
+        const createdFormula = formulaStore.post(this.selectedMake,
+          this.selectedModel,
+          this.selectedYearComparisonType,
+          this.selectedYear,
+          this.selectedFuelType,
+          this.selectedRisk
+        );
+        this.notifyFormulaCreated(createdFormula);
+      },
+      notifyFormulaCreated(createdFormula) {
+        /**
+         * Change event that is emitted whenever the selection is changed.
+         * @event change
+         * @property {Object[]} new set option.
+         */
+        this.$emit('formula-created', { formula: createdFormula });
+      },
+      resetForm(){
+        this.selectedMake = null;
+        this.selectedModel = null;
+        this.selectedYear = null;
+        this.selectedYearComparisonType = null;
+        this.selectedRisk = null;
+        this.selectedFuelType = null;
+      }
+    },
     created() {
       nhtsaStore.getAllMakes().then((makes) => {
-        this.availableMakes = makes;
+        const availableMakes = {};
+        makes.forEach((make) => {
+          availableMakes[make.Make_ID] = make;
+        });
+        this.availableMakes = availableMakes;
       });
     }
   }
