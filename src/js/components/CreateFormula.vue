@@ -26,16 +26,14 @@
       </div>
     </div>
     <div class="mb-3 row">
-      <div class="btn-group">
+      <div class="col-5 btn-group">
         <RadioButtonSelector
           id="yearComparisonTypeSelector"
           :options="yearComparisonTypeOptions"
           @change="selectedYearComparisonType = $event.newValue"
         ></RadioButtonSelector>
       </div>
-    </div>
-    <div class="mb-3 row">
-      <div class="form-check">
+      <div class="col-7 form-check">
         <input type="text"
                class="form-control"
                id="yearSelector"
@@ -152,8 +150,5 @@
 </script>
 
 <style>
-  .create-formula-form {
-
-  }
 
 </style>

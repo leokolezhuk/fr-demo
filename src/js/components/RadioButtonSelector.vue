@@ -1,5 +1,5 @@
 <template>
-  <div class="btn-group">
+  <div class="radio-button-selector-group btn-group">
     <template v-for="option in options">
       <input type="radio" class="btn-check"
              name="fuelTypeSelection"
@@ -43,11 +43,11 @@
       getOptionId(option) {
         return `${this.id}_${option.id}`;
       },
-      notifyOptionChanged(option) {
+      notifyOptionChanged() {
         /**
-         * Change event that is emmited whenever the filter is changed.
+         * Change event that is emitted whenever the selection is changed.
          * @event change
-         * @property {Object[]} new options set
+         * @property {Object[]} new set option.
          */
         this.$emit('change', { newValue: this.selectedOptionId });
       },
@@ -56,5 +56,7 @@
 </script>
 
 <style scoped>
-
+  .radio-button-selector-group{
+    width: 100%;
+  }
 </style>
