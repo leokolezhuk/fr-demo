@@ -1,8 +1,14 @@
 <template>
   <div id="app">
     <h1>Friss demo</h1>
-    <CreateFormula @formula-created="updateFormulaList"></CreateFormula>
-    <FormulaList :formulas="formulas"></FormulaList>
+    <div class="row">
+      <div class="col-6">
+        <FormulaList :formulas="formulas"></FormulaList>
+      </div>
+      <div class="col-6">
+        <CreateFormula @formula-created="updateFormulaList"></CreateFormula>
+      </div>
+    </div>
   </div>
 </template>
 <script>
