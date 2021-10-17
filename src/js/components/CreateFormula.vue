@@ -3,17 +3,16 @@
     <h3>Create Formula</h3>
     <div v-show="errors">
       <ul class="form-errors">
-        <li  v-for="error in errors">
+        <li v-for="error in errors">
           {{ error }}
         </li>
       </ul>
-
     </div>
     <div class="mb-3 row">
       <div class="form-group">
         <input class="form-control"
                type="text"
-               placeholder="Makes"
+               placeholder="Make"
                list="vehicleMakes"
                v-model="selectedMake">
         <datalist id="vehicleMakes">
@@ -25,7 +24,7 @@
         <div v-show="!isModelsLoading">
           <input class="form-control"
                  type="text"
-                 placeholder="Models"
+                 placeholder="Model"
                  list="vehicleModels"
                  v-model="selectedModel">
           <datalist id="vehicleModels">
@@ -72,15 +71,10 @@
               class="btn btn-primary"
               @click="create">Submit
       </button>
-    </div>
-
-    <div>
-      {{ selectedMake }}<br>
-      {{ selectedModel }} <br>
-      {{ selectedYear }} <br>
-      {{ selectedYearComparisonType }} <br>
-      {{ selectedFuelType }} <br>
-      {{ selectedRisk }} <br>
+      <button type="button"
+              class="btn btn-outline-secondary"
+              @click="cancel">Cancel
+      </button>
     </div>
   </form>
 </template>
@@ -90,6 +84,15 @@
   import NHTSAStore from '@modules/nhtsa_store';
   import Loader from '@components/Loader.vue';
   import RadioButtonSelector from '@components/RadioButtonSelector.vue';
+
+  function getYearComparisonTypeString(id) {
+    const mapping = {
+      'earlier': '<',
+      'equal': '=',
+      'later': '>',
+    };
+    return mapping[id];
+  }
 
   const nhtsaStore = new NHTSAStore();
   export default {
@@ -197,7 +200,25 @@
         if (this.selectedModel && this.availableModels[this.selectedModel] === undefined) {
           this.errors.push('Vehicle model should be one of the available options.')
         }
-        if (!this.selectedRisk){
+        if ((this.selectedYearComparisonType && !this.selectedYear)
+          || (this.selectedYear && !this.selectedYearComparisonType)
+        ) {
+          this.errors.push('Both year and year comparison type(>, <, =) must be selected.')
+        }
+        if (this.selectedYear) {
+          const yearInt = parseInt(this.selectedYear);
+          if (!yearInt) {
+            this.errors.push(`The value '${this.selectedYear}' is not a valid year.`);
+          }
+          const firstAutomobileYear = 1769;
+          const currentYear = new Date().getFullYear();
+          if (yearInt < firstAutomobileYear || yearInt >= currentYear) {
+            this.errors.push(
+              `The model year should be between ${firstAutomobileYear} and ${currentYear}.`
+            );
+          }
+        }
+        if (!this.selectedRisk) {
           this.errors.push('The risk has to be specified.')
         }
         return (this.errors.length === 0);
@@ -206,7 +227,7 @@
         if (this.validate()) {
           const createdFormula = formulaStore.post(this.selectedMake,
             this.selectedModel,
-            this.selectedYearComparisonType,
+            getYearComparisonTypeString(this.selectedYearComparisonType),
             this.selectedYear,
             this.selectedFuelType,
             this.selectedRisk
@@ -216,13 +237,25 @@
         }
         e.preventDefault();
       },
+      cancel() {
+        this.resetForm();
+        this.notifyFormulaCanceled();
+      },
       notifyFormulaCreated(createdFormula) {
         /**
          * Change event that is emitted whenever the selection is changed.
          * @event change
          * @property {Object[]} new set option.
          */
-        this.$emit('formulaCreated', { formula: createdFormula });
+        this.$emit('create', { formula: createdFormula });
+      },
+      notifyFormulaCanceled() {
+        /**
+         * Change event that is emitted whenever the selection is changed.
+         * @event change
+         * @property {Object[]} new set option.
+         */
+        this.$emit('cancel', {});
       },
       resetForm() {
         this.selectedMake = null;
@@ -269,7 +302,7 @@
 </script>
 
 <style>
-  .form-errors{
+  .form-errors {
     color: red;
   }
 </style>
