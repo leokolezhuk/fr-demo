@@ -12,7 +12,7 @@ class FormulaStore {
       formulas: this.formulas,
       lastObjectId: this.lastObjectId,
     };
-    localStorage.setItem(storeKey, JSON.stringify(newValue));
+    localStorage.setItem(LS_FORMULAS_KEY, JSON.stringify(dataToStore));
   }
 
   fetchStore() {
