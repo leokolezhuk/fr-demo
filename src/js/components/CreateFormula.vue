@@ -1,28 +1,29 @@
 <template>
-  <form class="container col-5 create-formula-form">
+  <form class="container create-formula-form">
+    <h3>Create Formula</h3>
     <div class="mb-3 row">
       <div class="form-group">
-        <select class="form-select"
-                v-model="selectedMake">
-          <option v-for="make in availableMakes"
-                  v-bind:value="make.Make_ID">
-            {{ make.Make_Name }}
-          </option>
-        </select>
+        <input class="form-control"
+               type="text"
+               placeholder="Makes"
+               list="vehicleMakes"
+               @input="saveDatalistSelection($event, 'selectedMake')">
+        <datalist id="vehicleMakes">
+        </datalist>
       </div>
     </div>
     <div class="mb-3 row">
       <div class="form-group">
-        <select class="form-select"
-                v-if="!isModelsLoading"
-                v-model="selectedModel">
-          <option v-for="model in availableModels"
-                  :key="`modelOption_${model.Model_Name}`"
-                  v-bind:value="model.Model_ID">
-            {{ model.Model_Name }}
-          </option>
-        </select>
-        <Loader v-else></Loader>
+        <div v-show="!isModelsLoading">
+          <input class="form-control"
+                 type="text"
+                 placeholder="Models"
+                 list="vehicleModels"
+                 @input="saveDatalistSelection($event, 'selectedModel')">
+          <datalist id="vehicleModels">
+          </datalist>
+        </div>
+        <Loader v-show="isModelsLoading"></Loader>
       </div>
     </div>
     <div class="mb-3 row">
@@ -55,9 +56,12 @@
         @change="selectedRisk = $event.newValue"
       ></RadioButtonSelector>
     </div>
-    <button type="submit" class="btn btn-primary"
-            @click="create">Submit
-    </button>
+    <div class="d-grid gap-2">
+      <button type="submit" class="btn btn-primary"
+              @click="create">Submit
+      </button>
+    </div>
+
     <div>
       {{ selectedMake }}<br>
       {{ selectedModel }} <br>
@@ -82,10 +86,8 @@
     components: { Loader, RadioButtonSelector },
     data() {
       return {
-        availableMakes: {},
-        availableModels: {},
         isModelsLoading: false,
-        selectedMake: null,
+        selectedMake: '',
         selectedModel: null,
         selectedYear: null,
         selectedYearComparisonType: null,
@@ -136,12 +138,20 @@
       selectedMake() {
         if (this.selectedMake) {
           this.isModelsLoading = true;
-          nhtsaStore.getModelsForMakeId(this.selectedMake).then((models) => {
+          const selectedMake = this.availableMakes[this.selectedMake];
+          if (selectedMake === undefined) {
+            this.isModelsLoading = false;
+            return [];
+          }
+          nhtsaStore.getModelsForMakeId(selectedMake.Make_ID).then((models) => {
             const availableModels = {};
-            models.forEach((model) => {
+            models?.forEach((model) => {
               availableModels[model.Model_ID] = model;
             });
-            this.availableModels = availableModels;
+            this.updateDataList('vehicleModels',
+              Object.values(availableModels),
+              (item) => item.Model_Name
+            );
             this.isModelsLoading = false;
           });
         }
@@ -149,6 +159,10 @@
       }
     },
     methods: {
+      saveDatalistSelection(e, targetProperty) {
+        let val = e.target.value;
+        this[targetProperty] = val;
+      },
       create() {
         const createdFormula = formulaStore.post(this.selectedMake,
           this.selectedModel,
@@ -167,22 +181,46 @@
          */
         this.$emit('formula-created', { formula: createdFormula });
       },
-      resetForm(){
+      resetForm() {
         this.selectedMake = null;
         this.selectedModel = null;
         this.selectedYear = null;
         this.selectedYearComparisonType = null;
         this.selectedRisk = null;
         this.selectedFuelType = null;
+      },
+      /**
+       * Updated a datalist HTML element with a given with the given content.
+       * Do to low performance when using Vue bindings for a datalist with a lot of options,
+       * this workaround is needed.
+       * @param datalistId{String} ID of the HTML datalist to update.
+       * @param list{Array} Array of items to be used as the new content.
+       * @param valueExtractor{CallableFunction} Function that defines how to extract the value
+       * of each element in the provided list. This value is used as the option value.
+       * */
+      updateDataList(datalistId, list, valueExtractor){
+        var datalistElement = document.getElementById(datalistId);
+        var datalistString = '';
+        for (let i = 0; i < list.length; i++) {
+          const value = valueExtractor(list[i]);
+          datalistString += `<option value="${value}">${value}</option>`;
+        }
+        datalistElement.innerHTML = datalistString;
       }
     },
     created() {
       nhtsaStore.getAllMakes().then((makes) => {
         const availableMakes = {};
         makes.forEach((make) => {
-          availableMakes[make.Make_ID] = make;
+          availableMakes[make.Make_Name] = make;
         });
         this.availableMakes = availableMakes;
+
+        const availableMakeValues = Object.values(availableMakes);
+        this.updateDataList('vehicleMakes',
+          availableMakeValues,
+          (item) => item.Make_Name
+        );
       });
     }
   }
