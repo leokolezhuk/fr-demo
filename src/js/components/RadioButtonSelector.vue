@@ -2,7 +2,7 @@
   <div class="radio-button-selector-group btn-group">
     <template v-for="option in options">
       <input type="radio" class="btn-check"
-             name="fuelTypeSelection"
+             :name="`${id}Selection`"
              :id="getOptionId(option)"
              :value="option.id"
              v-model="selectedOptionId"
